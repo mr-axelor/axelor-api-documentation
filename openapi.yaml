@@ -1,0 +1,420 @@
+openapi: 3.0.3
+info:
+  title: Axelor API
+  description: Documentation for Axelor API
+  version: 0.1.0
+externalDocs:
+  description: "Axelor"
+  url: "https://www.axelor.com"
+  
+paths:
+
+  "/login.jsp":
+    post:
+      tags: ["Authentication"]
+      summary: "Axelor ERP authentication"
+      description: "Axelor provides cookie based authentication. Therefore, it is necessary to obtain the cookie by validating your login credentials. Then the obtained cookie has to be saved and included in the header of all the subsequent requests made to the API."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/loginObject"
+
+  "/ws/integromat/createRecord":  
+    post:
+      tags: ["Create Record"]
+      summary: "Creates a record for the specified model in Axelor ERP"
+      requestBody:
+        content: 
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createRecord"
+      responses:
+        "200":
+          description: "returns the ID of the created Record along with model name and model type"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createRecordResponse"
+        "500":
+          description: "returns the error message"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+                
+                
+  "/ws/integromat/deleteRecord":
+    parameters: 
+    -  name: modelType
+       in: query
+       description: whether the record you want to delete is a predefined model or a json model
+       example: "custom"
+       schema:
+         type: string
+       required: true
+    -  name: modelName
+       in: query
+       description: the name of the model
+       example: "customModelName"
+       schema:
+         type: string
+       required: true
+    -  name: id
+       in: query
+       description: the identifier of the record you want to delete
+       example: 42
+       schema:
+         type: number
+       required: true
+    get:
+      tags: ["Delete Record"]
+      summary: Deletes a specified record based on ID
+      responses:
+        "200":
+          description: "returns the ID of the deleted Record along with model name and model type"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createRecordResponse"
+        "500":
+          description: "returns the error message"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+                
+                
+  "/ws/integromat/getRecord":
+    parameters:
+    -  name: modelType
+       in: query
+       description: whether the record you want to delete is a predefined model or a json model
+       schema:
+         type: string
+       required: true
+       example: "normal"
+    -  name: modelName
+       in: query
+       description: the name of the model
+       schema:
+         type: string
+       required: true
+       example: "com.axelor.apps.base.db.City"
+    -  name: id
+       in: query
+       description: the identifier of the record you want to delete
+       schema:
+         type: number
+       required: true
+       example: "42"
+    get:
+      tags: ["Get a Record"]
+      summary: Gets the details of the specified record based on ID
+      responses:
+        "200":
+          description: returns the details of the requested record
+          content:
+             application/json:
+               schema:
+                 $ref: "#/components/schemas/cityRecordSample"
+        "500":
+          description: "returns the error message"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+      
+      
+  "ws/integromat/searchRecord":
+    post:
+      tags: ["Search for a Record"]
+      summary: Seaches for the record based on the filters provided
+      requestBody:
+        content: 
+          application/json:
+            schema:
+              $ref: "#/components/schemas/searchRecord"
+      responses:
+        "200":
+          description: returns the details of the requested record
+          content:
+             application/json:
+               schema:
+                 $ref: "#/components/schemas/cityRecordSample"
+        "500":
+          description: "returns the error message"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error" 
+              
+              
+  "ws/integromat/updateRecord":
+    post:
+      tags: ["Update a Record"]
+      summary: update an existing record
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateRecord"
+      responses:
+        "200":
+          description: "returns the ID of the updated Record along with model name and model type"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createRecordResponse"
+        "500":
+          description: "returns the error message"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+              
+              
+  "ws/integromat/watchRecords":
+    parameters:
+    -  name: modelType
+       in: query
+       description: whether the record you want to delete is a predefined model or a json model
+       schema:
+         type: string
+       required: true
+       example: "normal"
+    -  name: model
+       in: query
+       description: the name of the model
+       schema:
+         type: string
+       required: true
+       example: "com.axelor.apps.base.db.City"
+    get:
+      tags: ["Watch Records"]
+      summary: checks for new insertions of records of the specified model
+      responses:
+        "200":
+          description: returns the details of the requested record
+          content:
+             application/json:
+               schema:
+                 $ref: "#/components/schemas/cityRecordSample"
+        "500":
+          description: "returns the error message"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+      
+      
+  "ws/integromat/getFile":
+    parameters:
+    -  name: modelType
+       in: query
+       schema:
+         type: string
+       required: true
+    -  name: model
+       in: query
+       schema:
+         type: string
+       required: true
+    -  name: id
+       in: query
+       schema:
+         type: number
+       required: true
+    -  name: fileField
+       in: query
+       schema:
+         type: string
+       required: true
+    get:
+      tags: ["Get a File"]
+      summary: Downloads a file from the specified field of the record
+      responses:
+        "200":
+          description: "returns the binary data of the file"
+          content:
+            application/octet-stream:  
+              schema:
+                $ref: "#/components/schemas/fileObject"
+          
+   
+    
+      
+        
+      
+ 
+components: 
+  schemas:
+  
+    cityRecordSample:
+      type: object
+      properties:
+        name:
+          type: string
+        zip:
+          type: string
+        country:
+          type: object
+          properties: 
+            name: 
+              type: string
+            alpha3Code:
+              type: string
+            phonePrefix:
+              type: string
+      example:
+        name: Bengaluru
+        zip: 560090
+        country:
+          name: "India"
+          alpha3Code: "IND"
+          phonePrefix: "+91"
+           
+  
+    fileObject: 
+      type: object
+      properties:
+        data:
+          type: string
+          format: binary
+          description: "binary data of the file"
+      example:
+        data: "126 123 90 ..."
+          
+          
+    loginObject:
+      type: object
+      properties:
+        username:
+          type: string
+          description: username of your Axelor ERP account
+        password:
+          type: string
+          description: password of your Axelor ERP account
+      required:
+        - username
+        - password
+      example: 
+        username: "admin"
+        password: "admin"
+  
+  
+    createRecord:
+      type: object
+      properties:
+        modelType:
+          type: string
+          description: "whether it is a custom json model or a predefined model (Allowed values: 'custom', 'normal') Any value other than 'custom' is considered as a normal model'"
+        model:
+          type: string
+          description: "the name of the model"
+        data:
+          type: object
+          description: "key-value pair of field names of the model with their respective values"
+          properties:
+            field1:
+              type: string
+      required: 
+        - modelType
+        - model
+        - data
+      example:
+        modelType: "normal"
+        model: "com.axelor.apps.base.db.City"
+        data:
+          name: "Bengaluru"
+          
+          
+    updateRecord:
+      type: object
+      properties:
+        modelType:
+          type: string
+          description: "whether it is a custom json model or a predefined model (Allowed values: 'custom', 'normal') Any value other than 'custom' is considered as a normal model'"
+        model:
+          type: string
+          description: "the name of the model"
+        id: 
+          type: number
+          description: "ID of the record that has to be updated"
+        data:
+          type: object
+          description: "key-value pair of field names of the model with their respective values"
+          properties:
+            field1:
+              type: string
+      required: 
+        - modelType
+        - model
+        - data
+        - id
+      example:
+        modelType: "normal"
+        model: "com.axelor.apps.base.db.City"
+        id: "42"
+        data:
+          name: "Bengaluru"
+          
+          
+    error:
+      type: object
+      properties:
+        error:
+          type: string
+      example:
+        error: "Unable to perform requested operation due to an exception"
+          
+          
+          
+    createRecordResponse:
+      type: object
+      properties:
+        modelType:
+          type: string
+        model:
+          type: string
+        id:
+          type: string
+      example:
+        modelType: "normal"
+        model: "com.axelor.apps.base.db.City"
+        id: "42"
+      
+          
+          
+    searchRecord:
+      type: object
+      properties:
+        modelType: 
+          type: string
+          description: "whether it is a custom json model or a predefined model (Allowed values: 'custom', 'normal')"
+        model:
+          type: string
+          description: "the name of the model"
+        jpqlFilter:
+          type: string
+          description: "jpql filter string to search the record based on it"
+        search:
+          type: array
+          items: 
+            type: array
+            items: 
+              type: object
+              properties: 
+                a: 
+                  type: string
+                b:
+                  type: string
+                o: 
+                  type: string
+      required:
+        - modelType
+        - model
+      example:
+        modelType: "normal"
+        model: "com.axelor.apps.base.db.City"
+        jpqlFilter: "self.name = 'Bengaluru'"
